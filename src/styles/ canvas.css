@@ -1,0 +1,13 @@
+.canvas-container {
+    touch-action: none;
+    position: relative;
+}
+
+.canvas-container canvas {
+    border-radius: 8px;
+    background-color: #f8f7f2;
+}
+
+.drawing-active {
+    cursor: crosshair;
+}

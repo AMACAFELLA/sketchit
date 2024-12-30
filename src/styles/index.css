@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-paper text-pencil-dark antialiased;
+    }
+}
+
+@layer components {
+    .sketch-button {
+        @apply font-sketch py-2 px-6 rounded-md relative transition-all duration-200 before:absolute before:inset-0 before:border-2 before:border-pencil-dark before:rounded-md before:transform before:rotate-[-0.5deg] after:absolute after:inset-0 after:border-2 after:border-pencil-dark after:rounded-md after:transform after:rotate-[0.5deg] hover:shadow-sketch;
+    }
+
+    .paper-background {
+        @apply bg-paper relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-black/5 before:to-transparent before:opacity-20;
+    }
+
+    .sketch-input {
+        @apply font-sketch bg-transparent border-b-2 border-pencil-dark/50 focus:border-pencil-dark outline-none px-2 py-1 transition-colors;
+    }
+
+    .sketch-card {
+        @apply bg-white/50 rounded-lg p-6 shadow-sketch relative before:absolute before:inset-0 before:border-2 before:border-pencil-dark/20 before:rounded-lg before:transform before:rotate-[-0.5deg] after:absolute after:inset-0 after:border-2 after:border-pencil-dark/20 after:rounded-lg after:transform after:rotate-[0.5deg];
+    }
+}
+
+@layer utilities {
+    .pencil-texture {
+        background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .sketch-shadow {
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1),
+            -1px -1px 4px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-paper;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-pencil-dark/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-pencil-dark/30;
+}
+
+/* Canvas styles */
+.canvas-container {
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: none;
+}
+
+/* Animation classes */
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 200ms ease-in;
+}
+
+.fade-exit {
+    opacity: 1;
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+}
+
+/* Loading animation */
+.sketch-loading {
+    position: relative;
+}
+
+.sketch-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    border: 4px solid transparent;
+    border-top-color: #2B2B2B;
+    border-radius: 50%;
+    animation: sketch-spin 1s ease infinite;
+}
+
+@keyframes sketch-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.cursor-pencil {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232B2B2B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z'%3E%3C/path%3E%3C/svg%3E") 0 24, pointer;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .sketch-button {
+        @apply py-1.5 px-4 text-sm;
+    }
+}
