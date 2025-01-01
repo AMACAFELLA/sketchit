@@ -10,21 +10,26 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aws-amplify/backend": "^1.11.0",
     "@aws-amplify/ui-react": "^6.7.2",
+    "@aws-cdk/aws-appsync-alpha": "^2.59.0-alpha.0",
     "@aws-sdk/client-bedrock-runtime": "^3.714.0",
     "@aws-sdk/client-dynamodb": "^3.716.0",
     "@aws-sdk/client-s3": "^3.717.0",
     "@aws-sdk/lib-dynamodb": "^3.716.0",
     "@aws-sdk/s3-request-presigner": "^3.717.0",
     "@heroicons/react": "^2.2.0",
+    "@types/aws-lambda": "^8.10.146",
+    "@types/node": "^22.10.3",
     "aws-amplify": "^6.11.0",
+    "aws-cdk-lib": "^2.173.4",
     "classnames": "^2.5.1",
     "framer-motion": "^11.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.0",
     "roughjs": "^4.6.6",
-    "socket.io-client": "^4.7.4",
+    "typescript": "^5.7.2",
     "uuid": "^11.0.3"
   },
   "devDependencies": {
@@ -35,7 +40,6 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "vite": "^5.0.8"

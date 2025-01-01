@@ -36,10 +36,10 @@ const Home = () => {
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => navigate('/multiplayer')}
+                        onClick={() => navigate('/gallery')}
                         className="sketch-button text-xl px-8 py-3 w-48"
                     >
-                        Multiplayer
+                        Gallery
                     </motion.button>
                     <motion.button
                         whileHover={{ scale: 1.05 }}
@@ -48,14 +48,6 @@ const Home = () => {
                         className="sketch-button text-xl px-8 py-3 w-48"
                     >
                         Profile
-                    </motion.button>
-                    <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => navigate('/gallery')}
-                        className="sketch-button text-xl px-8 py-3 w-48"
-                    >
-                        Gallery
                     </motion.button>
                     <motion.button
                         whileHover={{ scale: 1.05 }}

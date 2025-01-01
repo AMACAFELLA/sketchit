@@ -44,7 +44,7 @@ const Leaderboard = () => {
           {/* Header */}
           <div className="grid grid-cols-12 gap-4 p-4 border-b border-pencil-dark/10 bg-paper">
             <div className="col-span-2 font-sketch text-lg text-pencil-dark">Rank</div>
-            <div className="col-span-7 font-sketch text-lg text-pencil-dark">Player</div>
+            <div className="col-span-7 font-sketch text-lg text-pencil-dark flex items-center">Player</div>
             <div className="col-span-3 font-sketch text-lg text-pencil-dark text-right">Score</div>
           </div>
 
@@ -61,8 +61,19 @@ const Leaderboard = () => {
                 <div className="col-span-2 font-sketch text-xl text-pencil-dark">
                   #{index + 1}
                 </div>
-                <div className="col-span-7 font-sketch text-lg text-pencil-dark">
-                  {entry.playerName || 'Anonymous'}
+                <div className="col-span-7 font-sketch text-lg text-pencil-dark flex items-center gap-3">
+                  {entry.customization?.profilePicture ? (
+                    <img
+                      src={entry.customization.profilePicture}
+                      alt={`${entry.playerName}'s profile`}
+                      className="w-8 h-8 rounded-full border-2 border-pencil-dark object-cover"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full border-2 border-pencil-dark bg-paper flex items-center justify-center">
+                      <span className="font-sketch text-xs text-pencil-dark/50">?</span>
+                    </div>
+                  )}
+                  <span>{entry.playerName || 'Anonymous'}</span>
                 </div>
                 <div className="col-span-3 font-sketch text-lg text-pencil-dark text-right">
                   {entry.score}

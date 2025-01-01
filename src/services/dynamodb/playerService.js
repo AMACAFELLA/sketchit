@@ -84,7 +84,8 @@ export const playerService = {
     },
 
     async getLeaderboard() {
-        const response = await docClient.send(
+        // First get the leaderboard entries
+        const leaderboardResponse = await docClient.send(
             new QueryCommand({
                 TableName: TABLES.LEADERBOARD,
                 KeyConditionExpression: 'timeframe = :timeframe',
@@ -95,7 +96,26 @@ export const playerService = {
                 Limit: 100,
             })
         );
-        return response.Items || [];
+
+        const entries = leaderboardResponse.Items || [];
+
+        // Then fetch player details for each entry
+        const enrichedEntries = await Promise.all(
+            entries.map(async (entry) => {
+                try {
+                    const player = await this.getPlayer(entry.playerId);
+                    return {
+                        ...entry,
+                        customization: player?.customization || null
+                    };
+                } catch (error) {
+                    console.error(`Failed to fetch player details for ${entry.playerId}:`, error);
+                    return entry;
+                }
+            })
+        );
+
+        return enrichedEntries;
     },
 
     async updateLeaderboard(userId, score) {

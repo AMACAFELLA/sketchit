@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useAuth } from '../context/AuthContext';
+import { useAuthenticator } from '@aws-amplify/ui-react';
 import { playerService } from '../services/dynamodb/playerService';
 import { s3Service } from '../services/s3/s3Service';
 import GameContainer from '../components/Layout/GameContainer';
@@ -8,7 +8,7 @@ import DrawingEditor from '../components/Profile/DrawingEditor';
 import { useToastContext } from '../context/ToastContext';
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user } = useAuthenticator((context) => [context.user]);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,16 +18,12 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user?.userId) {
-        console.log('No user ID available');
-        setError('User not authenticated');
         setLoading(false);
         return;
       }
 
       try {
-        console.log('Fetching profile for user:', user.userId);
         const playerData = await playerService.getPlayer(user.userId);
-        console.log('Fetched profile:', playerData);
         
         if (!playerData) {
           const newProfile = await playerService.createPlayer(user.userId, user.username);
@@ -43,18 +39,16 @@ const Profile = () => {
       }
     };
 
-    fetchProfile();
+    if (user) {
+      fetchProfile();
+    }
   }, [user]);
 
   const handleProfilePictureUpdate = async (drawingData) => {
     try {
-      // Upload the profile picture to S3
       const imageKey = await s3Service.uploadProfilePicture(user.userId, drawingData);
-      
-      // Get the signed URL for the uploaded image
       const imageUrl = await s3Service.getSignedUrl(imageKey);
       
-      // Update the player's profile with the new profile picture URL
       const updatedProfile = await playerService.updateCustomization(user.userId, {
         ...profile.customization,
         profilePicture: imageUrl
@@ -70,13 +64,46 @@ const Profile = () => {
   };
 
   const handleDrawClick = () => {
-    console.log('Draw button clicked');
     setIsEditorOpen(true);
   };
 
-  if (loading) return <div className="text-center font-sketch text-xl">Loading...</div>;
-  if (error) return <div className="text-center font-sketch text-xl text-red-500">Error: {error}</div>;
-  if (!profile) return <div className="text-center font-sketch text-xl">No profile data available</div>;
+  if (!user) {
+    return (
+      <GameContainer>
+        <div className="text-center font-sketch text-xl">
+          Please sign in to view your profile
+        </div>
+      </GameContainer>
+    );
+  }
+
+  if (loading) {
+    return (
+      <GameContainer>
+        <div className="text-center font-sketch text-xl">Loading...</div>
+      </GameContainer>
+    );
+  }
+
+  if (error) {
+    return (
+      <GameContainer>
+        <div className="text-center font-sketch text-xl text-red-500">
+          Error: {error}
+        </div>
+      </GameContainer>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <GameContainer>
+        <div className="text-center font-sketch text-xl">
+          Setting up your profile...
+        </div>
+      </GameContainer>
+    );
+  }
 
   return (
     <GameContainer>
@@ -137,7 +164,8 @@ const Profile = () => {
                 )}
                 <button
                   onClick={handleDrawClick}
-                  className="sketch-button hover:bg-paper/80 active:bg-paper/60 transition-colors"
+                  className="sketch-button hover:bg-paper/80 active:bg-paper/60 transition-colors cursor-pointer z-10 relative"
+                  type="button"
                 >
                   {profile.customization?.profilePicture ? 'Draw New Picture' : 'Draw Picture'}
                 </button>

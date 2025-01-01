@@ -6,6 +6,7 @@ export const PlayersTableSchema = {
     AttributeDefinitions: [
         { AttributeName: 'id', AttributeType: 'S' },
         { AttributeName: 'username', AttributeType: 'S' },
+        { AttributeName: 'level', AttributeType: 'N' }
     ],
     GlobalSecondaryIndexes: [
         {
@@ -19,6 +20,17 @@ export const PlayersTableSchema = {
                 WriteCapacityUnits: 5,
             },
         },
+        {
+            IndexName: 'LevelIndex',
+            KeySchema: [
+                { AttributeName: 'level', KeyType: 'HASH' },
+            ],
+            Projection: { ProjectionType: 'ALL' },
+            ProvisionedThroughput: {
+                ReadCapacityUnits: 5,
+                WriteCapacityUnits: 5,
+            },
+        }
     ],
     ProvisionedThroughput: {
         ReadCapacityUnits: 5,
