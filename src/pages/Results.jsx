@@ -9,15 +9,13 @@ import { useToastContext } from '../context/ToastContext';
 
 const Results = () => {
   const navigate = useNavigate();
-  const { drawings, score, resetGame } = useGame();
+  const { drawings, score, startGame } = useGame();
   const { user } = useAuth();
   const { showToast } = useToastContext();
 
   useEffect(() => {
-    let isMounted = true;
-
     const saveResults = async () => {
-      if (!user || !drawings.length || !isMounted) return;
+      if (!user || !drawings.length) return;
 
       try {
         // Save each drawing first
@@ -25,39 +23,42 @@ const Results = () => {
           await drawingService.saveDrawing(
             user.userId,
             drawing.word,
-            drawing.image
+            drawing.image,
+            drawing.category,
+            drawing.difficulty
           );
         }
 
-        // Update player stats only once per game
+        // Update player stats
         await playerService.updatePlayerStats(user.userId, {
           score,
           correctDrawings: drawings.length
         });
-        
-        // Update leaderboard
-        await playerService.updateLeaderboard(user.userId, score);
+
+        showToast('Results saved successfully!', 'success');
       } catch (error) {
         console.error('Error saving results:', error);
-        showToast('Failed to save some results', 'error');
+        showToast('Failed to save results', 'error');
       }
     };
 
     saveResults();
-
-    return () => {
-      isMounted = false;
-    };
   }, [user, drawings, score, showToast]);
 
   const handlePlayAgain = () => {
-    resetGame();
-    navigate('/game', { state: { fromHome: true } });
+    startGame();
+    navigate('/game', { replace: true });
   };
 
   const handleGoHome = () => {
-    resetGame();
     navigate('/', { replace: true });
+  };
+
+  const formatCategory = (category) => {
+    return category
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
   };
 
   return (
@@ -74,6 +75,9 @@ const Results = () => {
           <p className="font-sketch text-2xl text-pencil-dark mb-8">
             Final Score: {score}
           </p>
+          <p className="font-sketch text-xl text-pencil-dark/70 mb-4">
+            Drawings Completed: {drawings.length}
+          </p>
         </motion.div>
 
         {drawings.length > 0 && (
@@ -86,7 +90,7 @@ const Results = () => {
             <h2 className="font-sketch text-2xl text-pencil-dark mb-4 text-center">
               Your Drawings
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {drawings.map((drawing, index) => (
                 <motion.div
                   key={index}
@@ -95,10 +99,15 @@ const Results = () => {
                   transition={{ delay: index * 0.1 }}
                   className="bg-white rounded-lg p-4 shadow-sketch"
                 >
-                  <h3 className="font-sketch text-xl text-pencil-dark mb-2 text-center capitalize">
-                    {drawing.word}
-                  </h3>
-                  <div className="aspect-square w-full relative overflow-hidden rounded-md">
+                  <div className="mb-2 text-center">
+                    <h3 className="font-sketch text-xl text-pencil-dark capitalize">
+                      {drawing.word}
+                    </h3>
+                    <p className="font-sketch text-sm text-pencil-dark/70">
+                      {formatCategory(drawing.category)} - {drawing.difficulty.toLowerCase()}
+                    </p>
+                  </div>
+                  <div className="aspect-square w-full relative overflow-hidden rounded-md bg-paper">
                     <img
                       src={drawing.image}
                       alt={`Drawing of ${drawing.word}`}

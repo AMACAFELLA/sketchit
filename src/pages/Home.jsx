@@ -2,12 +2,15 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useGame } from '../context/GameContext';
 
 const Home = () => {
     const navigate = useNavigate();
     const { signOut } = useAuth();
+    const { startGame } = useGame();
 
     const handleStartGame = () => {
+        startGame(); // Start game before navigating
         navigate('/game', { state: { fromHome: true } });
     };
 

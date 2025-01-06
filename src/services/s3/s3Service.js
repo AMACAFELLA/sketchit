@@ -46,7 +46,29 @@ export const s3Service = {
     },
 
     async uploadProfilePicture(userId, imageData) {
-        return this.uploadImage(imageData, 'profile-pictures', `${userId}.png`);
+        const fileName = `profile-pictures/${userId}.png`;
+        const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
+        const binaryString = atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+
+        const params = {
+            Bucket: BUCKET_NAME,
+            Key: fileName,
+            Body: bytes.buffer,
+            ContentType: 'image/png'
+        };
+
+        try {
+            await s3Client.send(new PutObjectCommand(params));
+            return fileName;
+        } catch (error) {
+            console.error('Error uploading profile picture:', error);
+            throw error;
+        }
+
     },
 
     async uploadDrawing(userId, word, imageData) {

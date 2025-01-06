@@ -5,6 +5,7 @@ import { playerService } from '../services/dynamodb/playerService';
 import { s3Service } from '../services/s3/s3Service';
 import GameContainer from '../components/Layout/GameContainer';
 import DrawingEditor from '../components/Profile/DrawingEditor';
+import ProfilePicture from '../components/Profile/ProfilePicture';
 import { useToastContext } from '../context/ToastContext';
 
 const Profile = () => {
@@ -47,11 +48,10 @@ const Profile = () => {
   const handleProfilePictureUpdate = async (drawingData) => {
     try {
       const imageKey = await s3Service.uploadProfilePicture(user.userId, drawingData);
-      const imageUrl = await s3Service.getSignedUrl(imageKey);
       
       const updatedProfile = await playerService.updateCustomization(user.userId, {
         ...profile.customization,
-        profilePicture: imageUrl
+        profilePicture: imageKey
       });
       
       setProfile(updatedProfile);
@@ -149,19 +149,12 @@ const Profile = () => {
             </h2>
             <div className="space-y-4">
               <div className="flex flex-col items-center">
-                {profile.customization?.profilePicture ? (
-                  <div className="relative mb-4">
-                    <img
-                      src={profile.customization.profilePicture}
-                      alt="Profile"
-                      className="w-32 h-32 rounded-full border-2 border-pencil-dark"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-32 h-32 rounded-full border-2 border-pencil-dark bg-paper mb-4 flex items-center justify-center">
-                    <span className="font-sketch text-lg text-pencil-dark/50">No Picture</span>
-                  </div>
-                )}
+                <div className="relative mb-4">
+                  <ProfilePicture
+                    imageKey={profile.customization?.profilePicture}
+                    className="w-32 h-32 rounded-full border-2 border-pencil-dark"
+                  />
+                </div>
                 <button
                   onClick={handleDrawClick}
                   className="sketch-button hover:bg-paper/80 active:bg-paper/60 transition-colors cursor-pointer z-10 relative"

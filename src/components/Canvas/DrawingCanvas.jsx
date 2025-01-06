@@ -46,12 +46,12 @@ const DrawingCanvas = ({ onSubmit, currentWord }) => {
       const isCorrect = await analyzeDrawing(imageData, currentWord);
 
       if (isCorrect) {
-        showToast(`Great job! That's a perfect ${currentWord}!`, 'success');
+        showToast(`Great job! That's perfect!`, 'success');
         onSubmit?.(imageData);
         handleClear(canvasRef.current);
       } else {
         showToast(
-          `That doesn't look like a ${currentWord}. Try again!`,
+          `That doesn't quite look right. Try drawing it again!`,
           'error'
         );
         resumeTimer();
