@@ -21,7 +21,7 @@ The Sketch It game is simple yet hard to master:
 
 When I first sat down to build this game, I had only a rough idea but wasn't sure how to structure it. That's when I turned to Amazon Q with what might be the longest, most stream-of-consciousness prompt ever:
 
-"a game where the words are hidden the player needs to draw what the think the word is like no we have words that are blocked but we have blocks indicating the word length based on how many blocks use amazon bedrock image capabilities to identify if the drawing matches the word The UI needs to be sketch UI like I'm drawing on a sketch book the font needs to be pencil and needs to be cute and look visually beautiful for a game design. SO make sure that the buttons are sketch like with shading around the buttons and etc. It really needs to look good as well as the game mechanics needs to look good as well including the drawing section that needs to be perfect as we draw it needs to have that pencil feel and look and when we submit the drawing the amazon bedrock image will analyze to see if the drawing matches the word. I need you to provide me with the full file structure for this react tailwind game and all the packages I'll need for this project"
+> a game where the words are hidden the player needs to draw what the think the word is like no we have words that are blocked but we have blocks indicating the word length based on how many blocks use amazon bedrock image capabilities to identify if the drawing matches the word The UI needs to be sketch UI like I'm drawing on a sketch book the font needs to be pencil and needs to be cute and look visually beautiful for a game design. SO make sure that the buttons are sketch like with shading around the buttons and etc. It really needs to look good as well as the game mechanics needs to look good as well including the drawing section that needs to be perfect as we draw it needs to have that pencil feel and look and when we submit the drawing the amazon bedrock image will analyze to see if the drawing matches the word. I need you to provide me with the full file structure for this react tailwind game and all the packages I'll need for this project
 
 ![Amazon Q Prompt](./images/prompt.png)
 
@@ -150,7 +150,7 @@ const analyzeDrawing = async (imageBase64) => {
   }
 };
 ```
-Amazon Bedrock ![Amazon Bedrock](./images/amazon_bedrock.png)
+![Amazon Bedrock](./images/amazon_bedrock.png)
 
 ### Amazon DynamoDB for Game State
 
@@ -180,7 +180,7 @@ DynamoDB ![DynamoDB](./images/amazon_dynamodb.png)
 
 ### Amazon Cognito for Authentication
 
-User authentication is handled by Amazon Cognito. So only a select few can view my "beautiful drawings:
+User authentication is handled by Amazon Cognito. So only a select few can view my beautiful drawings:
 
 ```javascript
 // context/AuthContext.jsx
@@ -246,7 +246,7 @@ AWS Amplify ![AWS Amplify](./images/aws_amplify.png)
 
 ### Development Challenges and Solutions
 
-1. ### Real-time drawing Performance
+#### 1. Real-time Drawing Performance
 Initially, I faced performance issues. Amazon Q helped optimize the code:
 
 ```javascript
@@ -258,8 +258,10 @@ const draw = useCallback(({ nativeEvent }) => {
   contextRef.current.stroke();
 }, [isDrawing]);
 ```
-2. ### AWS Service Rate Limiting
+
+#### 2. AWS Service Rate Limiting
 To prevent enthusiastic artists from overwhelming Bedrock's API (and my AWS bill), I implemented a rate limiter. Here's how Amazon Q helped:
+
 ```javascript
 // utils/rateLimiter.js
 class RateLimiter {
@@ -285,6 +287,7 @@ class RateLimiter {
 
 export const bedrockLimiter = new RateLimiter(1, 1500); // 1 request per 1.5 seconds
 ```
+
 ### Architecture and Data Flow
 
 The application follows a serverless architecture:
