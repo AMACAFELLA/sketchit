@@ -7,8 +7,6 @@ import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Gallery from "./pages/Gallery";
 import HowToPlay from "./pages/HowToPlay";
-import { ToastProvider } from "./context/ToastContext";
-import { AuthProvider } from "./context/AuthContext";
 import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import "./aws-config";
@@ -107,16 +105,9 @@ const AppContent = () => {
         },
       }}
     >
-      {({ signOut, user }) => (
+      {({ signOut }) => (
         <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<Home />} />
           <Route
             path="/game"
             element={
@@ -172,13 +163,7 @@ const AppContent = () => {
 };
 
 const App = () => {
-  return (
-    <AuthProvider>
-      <ToastProvider>
-        <AppContent />
-      </ToastProvider>
-    </AuthProvider>
-  );
+  return <AppContent />;
 };
 
 export default App;

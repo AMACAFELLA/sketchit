@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext';
 import { useAuth } from '../context/AuthContext';
 import { playerService } from '../services/dynamodb/playerService';
-import { drawingService } from '../services/dynamodb/drawingService';
 import { useToastContext } from '../context/ToastContext';
 
 const Results = () => {
@@ -18,18 +17,7 @@ const Results = () => {
       if (!user || !drawings.length) return;
 
       try {
-        // Save each drawing first
-        for (const drawing of drawings) {
-          await drawingService.saveDrawing(
-            user.userId,
-            drawing.word,
-            drawing.image,
-            drawing.category,
-            drawing.difficulty
-          );
-        }
-
-        // Update player stats
+        // Only update player stats since drawings are already saved
         await playerService.updatePlayerStats(user.userId, {
           score,
           correctDrawings: drawings.length

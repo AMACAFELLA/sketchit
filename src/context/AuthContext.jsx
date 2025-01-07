@@ -19,7 +19,15 @@ export const AuthProvider = ({ children }) => {
   async function checkUser() {
     try {
       const currentUser = await getCurrentUser();
+      console.log('Current user:', currentUser); // Debug log
+      
+      if (!currentUser) {
+        setUser(null);
+        return;
+      }
+
       const attributes = await fetchUserAttributes();
+      console.log('User attributes:', attributes); // Debug log
 
       setUser({
         userId: currentUser.userId,
@@ -28,9 +36,7 @@ export const AuthProvider = ({ children }) => {
         ...attributes,
       });
     } catch (error) {
-      if (error.name !== "UserUnAuthenticatedException") {
-        console.error("Auth check error:", error);
-      }
+      console.error("Auth check error:", error);
       setUser(null);
     } finally {
       setLoading(false);

@@ -10,26 +10,34 @@ const colors = [
   '#800080', // Purple
 ];
 
-const ColorPicker = ({ currentColor, onColorChange }) => {
+const ColorPicker = ({ currentColor, onColorChange, disabled }) => {
+  const handleColorChange = (color) => {
+    if (!disabled) {
+      onColorChange(color);
+    }
+  };
+
   return (
-    <div className="flex items-center gap-2 mb-4">
+    <div className={`flex items-center gap-2 mb-4 ${disabled ? 'opacity-50' : ''}`}>
       {colors.map((color) => (
         <motion.button
           key={color}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          onClick={() => onColorChange(color)}
+          whileHover={disabled ? {} : { scale: 1.1 }}
+          whileTap={disabled ? {} : { scale: 0.9 }}
+          onClick={() => handleColorChange(color)}
           className={`w-8 h-8 rounded-full border-2 ${
             currentColor === color ? 'border-pencil-dark' : 'border-transparent'
-          }`}
+          } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           style={{ backgroundColor: color }}
+          disabled={disabled}
         />
       ))}
       <input
         type="color"
         value={currentColor}
-        onChange={(e) => onColorChange(e.target.value)}
-        className="w-8 h-8 cursor-pointer"
+        onChange={(e) => handleColorChange(e.target.value)}
+        className={`w-8 h-8 ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+        disabled={disabled}
       />
     </div>
   );

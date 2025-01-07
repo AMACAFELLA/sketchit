@@ -84,71 +84,80 @@ export const playerService = {
     },
 
     async getLeaderboard() {
-        // First get the leaderboard entries
-        const leaderboardResponse = await docClient.send(
-            new QueryCommand({
-                TableName: TABLES.LEADERBOARD,
-                KeyConditionExpression: 'timeframe = :timeframe',
-                ExpressionAttributeValues: {
-                    ':timeframe': 'all'
-                },
-                ScanIndexForward: false,
-                Limit: 100,
-            })
-        );
+        try {
+            // Get leaderboard entries sorted by score (descending)
+            const leaderboardResponse = await docClient.send(
+                new QueryCommand({
+                    TableName: TABLES.LEADERBOARD,
+                    KeyConditionExpression: 'timeframe = :timeframe',
+                    ExpressionAttributeValues: {
+                        ':timeframe': 'all'
+                    },
+                    ScanIndexForward: false, // Get highest scores first
+                    Limit: 100,
+                })
+            );
 
-        const entries = leaderboardResponse.Items || [];
+            const entries = leaderboardResponse.Items || [];
 
-        // Then fetch player details for each entry
-        const enrichedEntries = await Promise.all(
-            entries.map(async (entry) => {
-                try {
-                    const player = await this.getPlayer(entry.playerId);
-                    return {
-                        ...entry,
-                        customization: player?.customization || null
-                    };
-                } catch (error) {
-                    console.error(`Failed to fetch player details for ${entry.playerId}:`, error);
-                    return entry;
-                }
-            })
-        );
+            // Then fetch player details for each entry
+            const enrichedEntries = await Promise.all(
+                entries.map(async (entry) => {
+                    try {
+                        const player = await this.getPlayer(entry.playerId);
+                        return {
+                            ...entry,
+                            playerName: entry.playerName || player?.username || 'Anonymous',
+                            customization: player?.customization || null
+                        };
+                    } catch (error) {
+                        console.error(`Failed to fetch player details for ${entry.playerId}:`, error);
+                        return {
+                            ...entry,
+                            playerName: entry.playerName || 'Anonymous',
+                            customization: null
+                        };
+                    }
+                })
+            );
 
-        return enrichedEntries;
+            // Sort by score in descending order
+            return enrichedEntries.sort((a, b) => b.score - a.score);
+        } catch (error) {
+            console.error('Error fetching leaderboard:', error);
+            return [];
+        }
     },
 
     async updateLeaderboard(userId, score) {
-        const player = await this.getPlayer(userId);
+        try {
+            const player = await this.getPlayer(userId);
+            if (!player) {
+                console.error('Player not found:', userId);
+                return;
+            }
 
-        // First, query the existing score for this player
-        const existingScore = await docClient.send(
-            new QueryCommand({
-                TableName: TABLES.LEADERBOARD,
-                IndexName: 'PlayerIndex',
-                KeyConditionExpression: 'playerId = :playerId',
-                ExpressionAttributeValues: {
-                    ':playerId': userId
-                }
-            })
-        );
+            const timestamp = new Date().toISOString();
+            // Create a unique ID for each score entry
+            const scoreId = `${timestamp}_${userId}`;
 
-        const currentHighScore = existingScore.Items?.[0]?.score ?? 0;
-
-        // Only update if the new score is higher
-        if (score > currentHighScore) {
             await docClient.send(
                 new PutCommand({
                     TableName: TABLES.LEADERBOARD,
                     Item: {
                         timeframe: 'all',
-                        score,
+                        score: score,  // This is a Number type in DynamoDB
                         playerId: userId,
-                        playerName: player.username,
-                        timestamp: new Date().toISOString()
+                        playerName: player.username || 'Anonymous',
+                        timestamp: timestamp,
+                        scoreId: scoreId // Add a unique identifier for each score
                     },
                 })
             );
+            console.log('Added new score to leaderboard for player:', userId, 'with score:', score);
+        } catch (error) {
+            console.error('Error updating leaderboard:', error);
+            throw error;
         }
     }
 };

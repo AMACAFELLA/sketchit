@@ -68,23 +68,46 @@ const DrawingCanvas = ({ onSubmit, currentWord }) => {
     }
   };
 
+  const handleStartDrawing = (e) => {
+    if (!isAnalyzing) {
+      startDrawing(e, canvasRef.current);
+    }
+  };
+
+  const handleDraw = (e) => {
+    if (!isAnalyzing) {
+      draw(e, canvasRef.current);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center gap-4">
-      <ColorPicker currentColor={currentColor} onColorChange={setCurrentColor} />
-      
-      <canvas
-        ref={canvasRef}
-        onMouseDown={(e) => startDrawing(e, canvasRef.current)}
-        onMouseMove={(e) => draw(e, canvasRef.current)}
-        onMouseUp={stopDrawing}
-        onMouseLeave={stopDrawing}
-        className="border-2 border-pencil-dark rounded-md bg-paper cursor-pencil"
-        style={{
-          width: '400px',
-          height: '400px',
-          touchAction: 'none',
-        }}
+      <ColorPicker 
+        currentColor={currentColor} 
+        onColorChange={setCurrentColor}
+        disabled={isAnalyzing}
       />
+      
+      <div className="relative">
+        <canvas
+          ref={canvasRef}
+          onMouseDown={handleStartDrawing}
+          onMouseMove={handleDraw}
+          onMouseUp={stopDrawing}
+          onMouseLeave={stopDrawing}
+          className={`border-2 border-pencil-dark rounded-md bg-paper ${isAnalyzing ? 'cursor-not-allowed opacity-50' : 'cursor-pencil'}`}
+          style={{
+            width: '400px',
+            height: '400px',
+            touchAction: 'none',
+          }}
+        />
+        {isAnalyzing && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-md">
+            <div className="sketch-loading"></div>
+          </div>
+        )}
+      </div>
       
       <CanvasControls
         onClear={() => handleClear(canvasRef.current)}

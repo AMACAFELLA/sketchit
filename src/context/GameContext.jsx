@@ -8,6 +8,9 @@ import React, {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getRandomWord, DIFFICULTY } from '../utils/wordList';
+import { drawingService } from '../services/dynamodb/drawingService';
+import { playerService } from '../services/dynamodb/playerService';
+import { useAuth } from './AuthContext';
 
 const GameContext = createContext();
 
@@ -20,6 +23,7 @@ const getDifficultyForScore = (score) => {
 
 export const GameProvider = ({ children }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [currentWordData, setCurrentWordData] = useState(() => getRandomWord());
   const [drawings, setDrawings] = useState([]);
   const [score, setScore] = useState(0);
@@ -110,8 +114,28 @@ export const GameProvider = ({ children }) => {
         word: currentWordData.word,
         image: imageData,
         difficulty: currentWordData.difficulty,
-        category: currentWordData.category
+        category: currentWordData.category,
+        timestamp: new Date().toISOString()
       };
+
+      // Save drawing immediately to DynamoDB and S3
+      if (user?.userId) {
+        console.log('Saving drawing for user:', user.userId); // Debug log
+        try {
+          await drawingService.saveDrawing(
+            user.userId,
+            newDrawing.word,
+            newDrawing.image,
+            newDrawing.category,
+            newDrawing.difficulty
+          );
+          console.log('Drawing saved successfully');
+        } catch (error) {
+          console.error('Failed to save drawing:', error);
+        }
+      } else {
+        console.log('No user ID available, skipping drawing save');
+      }
 
       setDrawings(prev => [...prev, newDrawing]);
 
@@ -123,7 +147,25 @@ export const GameProvider = ({ children }) => {
         [DIFFICULTY.EXPERT]: 30,
       }[currentWordData.difficulty];
 
-      setScore(prev => prev + scoreIncrease);
+      const newScore = score + scoreIncrease;
+      setScore(newScore);
+      
+      // Update leaderboard immediately if user is authenticated
+      if (user?.userId) {
+        console.log('Updating leaderboard for user:', user);  // Debug full user object
+        console.log('Current score:', score);
+        console.log('Score increase:', scoreIncrease);
+        console.log('New score:', newScore);
+        try {
+          await playerService.updateLeaderboard(user.userId, newScore);
+          console.log('Leaderboard updated successfully');
+        } catch (error) {
+          console.error('Failed to update leaderboard:', error);
+        }
+      } else {
+        console.log('User not authenticated, skipping leaderboard update. User:', user);
+      }
+
       setAttempts(prev => prev + 1);
       setRevealedLetters([]);
       
@@ -138,7 +180,7 @@ export const GameProvider = ({ children }) => {
       setTimeLeft(timeForDifficulty);
 
       // Get next word with appropriate difficulty
-      const nextDifficulty = getDifficultyForScore(score + scoreIncrease);
+      const nextDifficulty = getDifficultyForScore(newScore);
       setCurrentWordData(getRandomWord(nextDifficulty));
       
     } catch (error) {
