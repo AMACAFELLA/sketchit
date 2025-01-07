@@ -9,14 +9,14 @@ const formatCategory = (category) => {
 };
 
 const GameInfo = () => {
-  const { 
-    score, 
+  const {
+    score,
     hintPoints,
     highScore,
-    timeLeft, 
-    currentCategory, 
+    timeLeft,
+    currentCategory,
     currentDifficulty,
-    revealLetter 
+    revealLetter
   } = useGame();
 
   const getHintButtonText = () => {
@@ -42,7 +42,7 @@ const GameInfo = () => {
         </div>
       </div>
       <div className="flex flex-col items-center gap-2">
-        <button 
+        <button
           onClick={revealLetter}
           disabled={hintPoints < 10 && score < 10}
           className={`sketch-button ${hintPoints < 10 && score < 10 ? 'opacity-50 cursor-not-allowed' : ''}`}

@@ -63,6 +63,14 @@ const Home = () => {
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        onClick={() => navigate('/how-to-play')}
+                        className="sketch-button text-xl px-8 py-3 w-48"
+                    >
+                        How to Play
+                    </motion.button>
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={signOut}
                         className="sketch-button text-xl px-8 py-3 w-48"
                     >

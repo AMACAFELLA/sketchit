@@ -6,6 +6,7 @@ import Results from "./pages/Results";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Gallery from "./pages/Gallery";
+import HowToPlay from "./pages/HowToPlay";
 import { ToastProvider } from "./context/ToastContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Authenticator } from "@aws-amplify/ui-react";
@@ -151,6 +152,14 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <Gallery />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/how-to-play"
+            element={
+              <ProtectedRoute>
+                <HowToPlay />
               </ProtectedRoute>
             }
           />

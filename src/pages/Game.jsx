@@ -10,15 +10,15 @@ import { useGame } from '../context/GameContext';
 import { useToast } from '../hooks/useToast';
 
 const Game = () => {
-  const { 
-    currentWord, 
-    revealedLetters, 
-    handleDrawingSubmit, 
-    startGame, 
+  const {
+    currentWord,
+    revealedLetters,
+    handleDrawingSubmit,
+    startGame,
     isGameStarted,
     pauseTimer,
     resumeTimer,
-    endGame 
+    endGame
   } = useGame();
   const { toast, hideToast } = useToast();
   const location = useLocation();
