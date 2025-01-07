@@ -38,6 +38,7 @@ const AppContent = () => {
           username: {
             placeholder: "Enter your username",
             isRequired: true,
+            label: "Username"
           },
           password: {
             placeholder: "Enter your password",
@@ -46,8 +47,9 @@ const AppContent = () => {
         },
         signUp: {
           username: {
-            placeholder: "Choose a username",
+            placeholder: "Choose a unique username",
             isRequired: true,
+            label: "Username"
           },
           password: {
             placeholder: "Create a password",

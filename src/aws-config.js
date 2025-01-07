@@ -7,8 +7,9 @@ Amplify.configure({
       userPoolClientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
       signUpVerificationMethod: 'code',
       loginWith: {
-        email: true,
+        email: false,
         username: true,
+        phone: false
       },
       region: import.meta.env.VITE_AWS_REGION || 'eu-central-1'
     }
