@@ -137,24 +137,59 @@ export const playerService = {
                 return;
             }
 
-            const timestamp = new Date().toISOString();
-            // Create a unique ID for each score entry
-            const scoreId = `${timestamp}_${userId}`;
-
-            await docClient.send(
-                new PutCommand({
+            // First, query to see if the player already has a leaderboard entry
+            const existingEntry = await docClient.send(
+                new QueryCommand({
                     TableName: TABLES.LEADERBOARD,
-                    Item: {
-                        timeframe: 'all',
-                        score: score,  // This is a Number type in DynamoDB
-                        playerId: userId,
-                        playerName: player.username || 'Anonymous',
-                        timestamp: timestamp,
-                        scoreId: scoreId // Add a unique identifier for each score
-                    },
+                    IndexName: 'PlayerIndex',
+                    KeyConditionExpression: 'playerId = :playerId',
+                    ExpressionAttributeValues: {
+                        ':playerId': userId
+                    }
                 })
             );
-            console.log('Added new score to leaderboard for player:', userId, 'with score:', score);
+
+            const timestamp = new Date().toISOString();
+
+            if (existingEntry.Items && existingEntry.Items.length > 0) {
+                // Update existing entry if new score is higher
+                const currentScore = existingEntry.Items[0].score;
+                if (score > currentScore) {
+                    await docClient.send(
+                        new UpdateCommand({
+                            TableName: TABLES.LEADERBOARD,
+                            Key: {
+                                timeframe: 'all',
+                                score: currentScore
+                            },
+                            UpdateExpression: 'SET score = :newScore, playerName = :playerName, timestamp = :timestamp',
+                            ExpressionAttributeValues: {
+                                ':newScore': score,
+                                ':playerName': player.username || 'Anonymous',
+                                ':timestamp': timestamp
+                            }
+                        })
+                    );
+                    console.log('Updated existing leaderboard entry for player:', userId, 'New score:', score);
+                } else {
+                    console.log('Current score not higher than existing score:', currentScore);
+                }
+            } else {
+                // Create new entry if player doesn't have one
+                await docClient.send(
+                    new PutCommand({
+                        TableName: TABLES.LEADERBOARD,
+                        Item: {
+                            timeframe: 'all',
+                            score: score,
+                            playerId: userId,
+                            playerName: player.username || 'Anonymous',
+                            timestamp: timestamp
+                        },
+                    })
+                );
+                console.log('Created new leaderboard entry for player:', userId, 'with score:', score);
+            }
         } catch (error) {
             console.error('Error updating leaderboard:', error);
             throw error;
