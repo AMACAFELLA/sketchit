@@ -9,9 +9,12 @@ export const drawingService = {
         try {
             const currentTimestamp = new Date().toISOString();
 
-            // Get the player's username
-            const player = await playerService.getPlayer(playerId);
-            const username = player.username;
+            // Get or create the player
+            let player = await playerService.getPlayer(playerId);
+            if (!player) {
+                // Create a temporary player record if none exists
+                player = await playerService.createPlayer(playerId, `Player_${playerId.slice(0, 8)}`);
+            }
 
             // Generate the drawing ID using playerId and word
             const drawingId = `${playerId}_${word}`;
@@ -26,11 +29,10 @@ export const drawingService = {
                 word,
                 imageKey,
                 timestamp: currentTimestamp,
-                username
+                username: player.username
             };
 
             // Use PutCommand instead of trying to update
-            // This will either create a new item or replace an existing one
             await docClient.send(
                 new PutCommand({
                     TableName: TABLES.DRAWINGS,

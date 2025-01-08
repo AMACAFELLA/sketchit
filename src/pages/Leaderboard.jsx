@@ -4,14 +4,17 @@ import { playerService } from '../services/dynamodb/playerService';
 import GameContainer from '../components/Layout/GameContainer';
 import ProfilePicture from '../components/Profile/ProfilePicture';
 import { useAuth } from '../context/AuthContext';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE_OPTIONS = [10, 25, 50];
 
 const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE_OPTIONS[0]);
+  const [pageLoading, setPageLoading] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -30,14 +33,22 @@ const Leaderboard = () => {
     fetchLeaderboard();
   }, []);
 
-  const totalPages = Math.ceil(leaderboard.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const totalPages = Math.ceil(leaderboard.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
   const currentEntries = leaderboard.slice(startIndex, endIndex);
 
   const handlePageChange = (page) => {
+    setPageLoading(true);
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Simulate a small delay to show loading state
+    setTimeout(() => setPageLoading(false), 300);
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(Number(newItemsPerPage));
+    setCurrentPage(1); // Reset to first page when changing items per page
   };
 
   const formatDate = (timestamp) => {
@@ -77,7 +88,12 @@ const Leaderboard = () => {
           </div>
 
           {/* Leaderboard entries */}
-          <div className="divide-y divide-pencil-dark/10">
+          <div className="divide-y divide-pencil-dark/10 relative">
+            {pageLoading && (
+              <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
+                <div className="font-sketch text-xl text-pencil-dark">Loading...</div>
+              </div>
+            )}
             {currentEntries.map((entry, index) => {
               const isCurrentUser = user && entry.playerId === user.userId;
               return (
@@ -127,20 +143,33 @@ const Leaderboard = () => {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center gap-2 p-4 bg-paper">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <div className="flex flex-col items-center gap-4 p-4 bg-paper">
+              <div className="font-sketch text-lg text-pencil-dark">
+                Showing {startIndex + 1}-{Math.min(endIndex, leaderboard.length)} of {leaderboard.length} entries
+              </div>
+              <div className="flex justify-center items-center gap-4">
                 <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`px-4 py-2 rounded-md font-sketch text-lg ${
-                    currentPage === page
-                      ? 'bg-pencil-dark text-white'
-                      : 'bg-white text-pencil-dark hover:bg-paper/80'
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`sketch-button p-2 ${
+                    currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''
                   }`}
                 >
-                  {page}
+                  <ChevronLeftIcon className="w-6 h-6" />
                 </button>
-              ))}
+                <span className="font-sketch text-xl">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`sketch-button p-2 ${
+                    currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''
+                  }`}
+                >
+                  <ChevronRightIcon className="w-6 h-6" />
+                </button>
+              </div>
             </div>
           )}
         </div>

@@ -23,7 +23,7 @@ const getDifficultyForScore = (score) => {
 
 export const GameProvider = ({ children }) => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, checkUser } = useAuth();
   const [currentWordData, setCurrentWordData] = useState(() => getRandomWord());
   const [drawings, setDrawings] = useState([]);
   const [score, setScore] = useState(0);
@@ -46,6 +46,13 @@ export const GameProvider = ({ children }) => {
       localStorage.setItem('highScore', score.toString());
     }
   }, [score, highScore]);
+
+  // Recheck auth state when game starts
+  useEffect(() => {
+    if (isGameStarted) {
+      checkUser();
+    }
+  }, [isGameStarted, checkUser]);
 
   const pauseTimer = useCallback(() => {
     if (timerRef.current) {
@@ -109,6 +116,9 @@ export const GameProvider = ({ children }) => {
     pauseTimer();
 
     try {
+      // Recheck auth state before saving
+      await checkUser();
+
       // Store the drawing
       const newDrawing = {
         word: currentWordData.word,
@@ -134,7 +144,7 @@ export const GameProvider = ({ children }) => {
           console.error('Failed to save drawing:', error);
         }
       } else {
-        console.log('No user ID available, skipping drawing save');
+        console.log('No user ID available after recheck, skipping drawing save');
       }
 
       setDrawings(prev => [...prev, newDrawing]);

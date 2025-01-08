@@ -1,10 +1,11 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useContext, useEffect, useCallback } from "react";
 import {
   signIn,
   signOut,
   getCurrentUser,
   fetchUserAttributes,
 } from "aws-amplify/auth";
+import { playerService } from "../services/dynamodb/playerService";
 
 const AuthContext = createContext(null);
 
@@ -12,44 +13,64 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    checkUser();
-  }, []);
-
-  async function checkUser() {
+  const checkUser = useCallback(async () => {
     try {
       const currentUser = await getCurrentUser();
-      console.log('Current user:', currentUser); // Debug log
+      console.log('Checking current user:', currentUser);
       
       if (!currentUser) {
+        console.log('No current user found');
         setUser(null);
-        return;
+        return null;
       }
 
       const attributes = await fetchUserAttributes();
-      console.log('User attributes:', attributes); // Debug log
+      console.log('User attributes:', attributes);
 
-      setUser({
+      const userData = {
         userId: currentUser.userId,
         username: currentUser.username,
         email: attributes.email,
         ...attributes,
-      });
+      };
+
+      // Check if player exists, create if not
+      try {
+        let player = await playerService.getPlayer(userData.userId);
+        if (!player) {
+          console.log('Creating new player record for:', userData.userId);
+          player = await playerService.createPlayer(userData.userId, userData.username);
+        }
+      } catch (error) {
+        console.error('Error checking/creating player:', error);
+      }
+
+      setUser(userData);
+      return userData;
     } catch (error) {
       console.error("Auth check error:", error);
       setUser(null);
-    } finally {
-      setLoading(false);
+      return null;
     }
-  }
+  }, []);
+
+  // Initial auth check
+  useEffect(() => {
+    const initAuth = async () => {
+      await checkUser();
+      setLoading(false);
+    };
+    initAuth();
+  }, [checkUser]);
 
   const handleSignIn = async (username, password) => {
     try {
       const { isSignedIn } = await signIn({ username, password });
       if (isSignedIn) {
-        await checkUser();
+        const userData = await checkUser();
+        return { isSignedIn, userData };
       }
-      return isSignedIn;
+      return { isSignedIn, userData: null };
     } catch (error) {
       console.error("Sign in error:", error);
       throw error;
@@ -81,6 +102,7 @@ export const AuthProvider = ({ children }) => {
         signIn: handleSignIn,
         signOut: handleSignOut,
         isAuthenticated: !!user,
+        checkUser,
       }}
     >
       {children}
