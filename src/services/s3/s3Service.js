@@ -26,7 +26,7 @@ export const s3Service = {
 
             return key;
         } catch (error) {
-            console.error('Error uploading to S3:', error);
+            // console.error('Error uploading to S3:', error);
             throw error;
         }
     },
@@ -40,7 +40,7 @@ export const s3Service = {
 
             return await getSignedUrl(s3Client, command, { expiresIn: 3600 });
         } catch (error) {
-            console.error('Error generating signed URL:', error);
+            // console.error('Error generating signed URL:', error);
             throw error;
         }
     },
@@ -65,7 +65,7 @@ export const s3Service = {
             await s3Client.send(new PutObjectCommand(params));
             return fileName;
         } catch (error) {
-            console.error('Error uploading profile picture:', error);
+            // console.error('Error uploading profile picture:', error);
             throw error;
         }
 

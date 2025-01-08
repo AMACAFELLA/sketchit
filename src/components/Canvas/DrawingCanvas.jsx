@@ -57,7 +57,7 @@ const DrawingCanvas = ({ onSubmit, currentWord }) => {
         resumeTimer();
       }
     } catch (error) {
-      console.error('Error submitting drawing:', error);
+      // console.error('Error submitting drawing:', error);
       showToast(
         'There was an error analyzing your drawing. Please try again.',
         'error'

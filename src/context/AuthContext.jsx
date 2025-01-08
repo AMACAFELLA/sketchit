@@ -16,16 +16,16 @@ export const AuthProvider = ({ children }) => {
   const checkUser = useCallback(async () => {
     try {
       const currentUser = await getCurrentUser();
-      console.log('Checking current user:', currentUser);
+      // console.log('Checking current user:', currentUser);
       
       if (!currentUser) {
-        console.log('No current user found');
+        // console.log('No current user found');
         setUser(null);
         return null;
       }
 
       const attributes = await fetchUserAttributes();
-      console.log('User attributes:', attributes);
+      // console.log('User attributes:', attributes);
 
       const userData = {
         userId: currentUser.userId,
@@ -38,17 +38,17 @@ export const AuthProvider = ({ children }) => {
       try {
         let player = await playerService.getPlayer(userData.userId);
         if (!player) {
-          console.log('Creating new player record for:', userData.userId);
+          // console.log('Creating new player record for:', userData.userId);
           player = await playerService.createPlayer(userData.userId, userData.username);
         }
       } catch (error) {
-        console.error('Error checking/creating player:', error);
+        // console.error('Error checking/creating player:', error);
       }
 
       setUser(userData);
       return userData;
     } catch (error) {
-      console.error("Auth check error:", error);
+      // console.error("Auth check error:", error);
       setUser(null);
       return null;
     }
@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
       }
       return { isSignedIn, userData: null };
     } catch (error) {
-      console.error("Sign in error:", error);
+      // console.error("Sign in error:", error);
       throw error;
     }
   };
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
       await signOut();
       setUser(null);
     } catch (error) {
-      console.error("Sign out error:", error);
+      // console.error("Sign out error:", error);
       throw error;
     }
   };

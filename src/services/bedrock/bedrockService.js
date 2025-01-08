@@ -37,7 +37,7 @@ const makeBedrockRequest = async ({ imageData, targetWord }) => {
     };
 
     return rateLimiter.execute(async () => {
-        console.log('Sending request to Bedrock...');
+        // console.log('Sending request to Bedrock...');
         try {
             const command = new InvokeModelCommand({
                 modelId: "anthropic.claude-3-5-sonnet-20240620-v1:0",
@@ -71,7 +71,7 @@ export const analyzeDrawing = async (imageData, targetWord) => {
     try {
         return await makeBedrockRequest({ imageData, targetWord });
     } catch (error) {
-        console.error('Drawing analysis failed:', error);
+        // console.error('Drawing analysis failed:', error);
         throw error;
     }
 };

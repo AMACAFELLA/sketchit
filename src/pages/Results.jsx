@@ -25,7 +25,7 @@ const Results = () => {
 
         showToast('Results saved successfully!', 'success');
       } catch (error) {
-        console.error('Error saving results:', error);
+        // console.error('Error saving results:', error);
         showToast('Failed to save results', 'error');
       }
     };

@@ -11,7 +11,7 @@ const ProfilePicture = ({ imageKey, className }) => {
           const url = await s3Service.getSignedUrl(imageKey);
           setImageUrl(url);
         } catch (error) {
-          console.error('Error getting signed URL:', error);
+          // console.error('Error getting signed URL:', error);
         }
       }
     };

@@ -18,7 +18,7 @@ const Gallery = () => {
         const galleryDrawings = await drawingService.getGalleryDrawings();
         setDrawings(galleryDrawings);
       } catch (error) {
-        console.error('Failed to fetch drawings:', error);
+        // console.error('Failed to fetch drawings:', error);
       } finally {
         setLoading(false);
       }

@@ -111,7 +111,7 @@ export const playerService = {
                             customization: player?.customization || null
                         };
                     } catch (error) {
-                        console.error(`Failed to fetch player details for ${entry.playerId}:`, error);
+                        // console.error(`Failed to fetch player details for ${entry.playerId}:`, error);
                         return {
                             ...entry,
                             playerName: entry.playerName || 'Anonymous',
@@ -124,7 +124,7 @@ export const playerService = {
             // Sort by score in descending order
             return enrichedEntries.sort((a, b) => b.score - a.score);
         } catch (error) {
-            console.error('Error fetching leaderboard:', error);
+            // console.error('Error fetching leaderboard:', error);
             return [];
         }
     },
@@ -133,7 +133,7 @@ export const playerService = {
         try {
             const player = await this.getPlayer(userId);
             if (!player) {
-                console.error('Player not found:', userId);
+                // console.error('Player not found:', userId);
                 return;
             }
 
@@ -170,9 +170,9 @@ export const playerService = {
                             }
                         })
                     );
-                    console.log('Updated existing leaderboard entry for player:', userId, 'New score:', score);
+                    // console.log('Updated existing leaderboard entry for player:', userId, 'New score:', score);
                 } else {
-                    console.log('Current score not higher than existing score:', currentScore);
+                    // console.log('Current score not higher than existing score:', currentScore);
                 }
             } else {
                 // Create new entry if player doesn't have one
@@ -188,10 +188,10 @@ export const playerService = {
                         },
                     })
                 );
-                console.log('Created new leaderboard entry for player:', userId, 'with score:', score);
+                // console.log('Created new leaderboard entry for player:', userId, 'with score:', score);
             }
         } catch (error) {
-            console.error('Error updating leaderboard:', error);
+            // console.error('Error updating leaderboard:', error);
             throw error;
         }
     }

@@ -33,7 +33,7 @@ const Profile = () => {
           setProfile(playerData);
         }
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
+        // console.error('Failed to fetch profile:', error);
         setError('Failed to load profile data');
       } finally {
         setLoading(false);
@@ -58,7 +58,7 @@ const Profile = () => {
       showToast('Profile picture updated successfully!', 'success');
       setIsEditorOpen(false);
     } catch (error) {
-      console.error('Failed to update profile picture:', error);
+      // console.error('Failed to update profile picture:', error);
       showToast('Failed to update profile picture', 'error');
     }
   };

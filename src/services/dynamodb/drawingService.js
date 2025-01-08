@@ -42,7 +42,7 @@ export const drawingService = {
 
             return imageKey;
         } catch (error) {
-            console.error('Error saving drawing:', error);
+            // console.error('Error saving drawing:', error);
             throw error;
         }
     },
@@ -60,7 +60,7 @@ export const drawingService = {
                 imageUrl: await s3Service.getSignedUrl(drawing.imageKey),
             })));
         } catch (error) {
-            console.error('Error fetching gallery drawings:', error);
+            // console.error('Error fetching gallery drawings:', error);
             throw new Error('Failed to fetch gallery drawings');
         }
     },
@@ -81,7 +81,7 @@ export const drawingService = {
                 imageUrl: await s3Service.getSignedUrl(drawing.imageKey),
             })));
         } catch (error) {
-            console.error('Error fetching user drawings:', error);
+            // console.error('Error fetching user drawings:', error);
             throw new Error('Failed to fetch user drawings');
         }
     },

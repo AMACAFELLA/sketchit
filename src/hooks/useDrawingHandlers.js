@@ -87,7 +87,7 @@ export const useDrawingHandlers = ({
                 showToast("Not quite what we're looking for. Try again!", 'error');
             }
         } catch (error) {
-            console.error('Error analyzing drawing:', error);
+            // console.error('Error analyzing drawing:', error);
             showToast('Unable to analyze drawing. Please try again.', 'error');
         } finally {
             setIsAnalyzing(false);

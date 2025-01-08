@@ -23,7 +23,7 @@ const Leaderboard = () => {
         const data = await playerService.getLeaderboard();
         setLeaderboard(data);
       } catch (error) {
-        console.error('Failed to fetch leaderboard:', error);
+        // console.error('Failed to fetch leaderboard:', error);
         setError('Failed to load leaderboard data');
       } finally {
         setLoading(false);

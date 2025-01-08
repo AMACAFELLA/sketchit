@@ -23,6 +23,7 @@
     "@types/node": "^22.10.3",
     "aws-amplify": "^6.11.0",
     "aws-cdk-lib": "^2.173.4",
+    "bottleneck": "^2.19.5",
     "classnames": "^2.5.1",
     "framer-motion": "^11.0.3",
     "react": "^18.2.0",

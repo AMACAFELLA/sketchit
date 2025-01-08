@@ -7,7 +7,7 @@ export const useBedrock = () => {
             const result = await analyzeDrawing(imageData, targetWord);
             return result;
         } catch (error) {
-            console.error('Error in Bedrock analysis:', error);
+            // console.error('Error in Bedrock analysis:', error);
             throw error;
         }
     }, []);

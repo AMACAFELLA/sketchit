@@ -130,7 +130,7 @@ export const GameProvider = ({ children }) => {
 
       // Save drawing immediately to DynamoDB and S3
       if (user?.userId) {
-        console.log('Saving drawing for user:', user.userId); // Debug log
+        // console.log('Saving drawing for user:', user.userId); // Debug log
         try {
           await drawingService.saveDrawing(
             user.userId,
@@ -139,12 +139,12 @@ export const GameProvider = ({ children }) => {
             newDrawing.category,
             newDrawing.difficulty
           );
-          console.log('Drawing saved successfully');
+          // console.log('Drawing saved successfully');
         } catch (error) {
-          console.error('Failed to save drawing:', error);
+          // console.error('Failed to save drawing:', error);
         }
       } else {
-        console.log('No user ID available after recheck, skipping drawing save');
+        // console.log('No user ID available after recheck, skipping drawing save');
       }
 
       setDrawings(prev => [...prev, newDrawing]);
@@ -162,18 +162,18 @@ export const GameProvider = ({ children }) => {
       
       // Update leaderboard immediately if user is authenticated
       if (user?.userId) {
-        console.log('Updating leaderboard for user:', user);  // Debug full user object
-        console.log('Current score:', score);
-        console.log('Score increase:', scoreIncrease);
-        console.log('New score:', newScore);
+        // console.log('Updating leaderboard for user:', user);  // Debug full user object
+        // console.log('Current score:', score);
+        // console.log('Score increase:', scoreIncrease);
+        // console.log('New score:', newScore);
         try {
           await playerService.updateLeaderboard(user.userId, newScore);
-          console.log('Leaderboard updated successfully');
+          // console.log('Leaderboard updated successfully');
         } catch (error) {
-          console.error('Failed to update leaderboard:', error);
+          // console.error('Failed to update leaderboard:', error);
         }
       } else {
-        console.log('User not authenticated, skipping leaderboard update. User:', user);
+        // console.log('User not authenticated, skipping leaderboard update. User:', user);
       }
 
       setAttempts(prev => prev + 1);
@@ -194,7 +194,7 @@ export const GameProvider = ({ children }) => {
       setCurrentWordData(getRandomWord(nextDifficulty));
       
     } catch (error) {
-      console.error('Error processing drawing:', error);
+      // console.error('Error processing drawing:', error);
     } finally {
       setIsAnalyzing(false);
       resumeTimer();
